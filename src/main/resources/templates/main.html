@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서 관리 시스템</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f5f5f5; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+
+        .section { margin-bottom: 25px; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
+        .section-title { font-weight: bold; margin-bottom: 10px; color: #555; display: block; }
+
+        .form-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex: 1; }
+        button { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+
+        .btn-blue { background-color: #007bff; color: white; }
+        .btn-green { background-color: #28a745; color: white; }
+        .btn-yellow { background-color: #ffc107; color: black; }
+        .btn-red { background-color: #dc3545; color: white; }
+        .btn-gray { background-color: #6c757d; color: white; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
+        th { background-color: #f8f9fa; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📚 도서 관리 시스템</h1>
+
+    <div class="section">
+        <span class="section-title">🔍 도서 조회</span>
+        <div class="form-group">
+            <input type="number" id="searchId" placeholder="조회할 도서 ID 입력">
+            <button class="btn-blue" onclick="fetchOneBook()">ID로 조회</button>
+            <button class="btn-gray" onclick="fetchAllBooks()">전체 목록 보기</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <span class="section-title">📝 도서 등록 및 수정</span>
+        <div class="form-group">
+            <input type="hidden" id="bookId">
+            <input type="text" id="bookTitle" placeholder="도서 제목 입력">
+            <button id="submitBtn" class="btn-green" onclick="handleSave()">등록</button>
+            <button id="cancelBtn" class="btn-gray" style="display:none;" onclick="resetForm()">취소</button>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th style="width: 15%;">ID</th>
+            <th style="width: 55%;">도서 제목</th>
+            <th style="width: 30%;">관리</th>
+        </tr>
+        </thead>
+        <tbody id="bookTableBody">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // 페이지 로드 시 전체 목록 조회
+    document.addEventListener('DOMContentLoaded', fetchAllBooks);
+
+    // [전체 조회]
+    function fetchAllBooks() {
+        fetch('/api/books')
+            .then(res => res.json())
+            .then(data => renderTable(data))
+            .catch(err => console.error('조회 에러:', err));
+    }
+
+    // [ID로 단건 조회]
+    function fetchOneBook() {
+        const id = document.getElementById('searchId').value;
+        if(!id) { alert('ID를 입력하세요'); return; }
+
+        // API 경로가 /api/books/{id} 라고 가정
+        fetch(`/api/books/${id}`)
+            .then(res => {
+                if(!res.ok) throw new Error('도서를 찾을 수 없습니다.');
+                return res.json();
+            })
+            .then(book => renderTable([book])) // 한 권만 리스트 형태로 전달
+            .catch(err => {
+                alert(err.message);
+                renderTable([]);
+            });
+    }
+
+    // [테이블 렌더링 함수]
+    function renderTable(books) {
+        const tbody = document.getElementById('bookTableBody');
+        tbody.innerHTML = '';
+
+        if (books.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3">데이터가 없습니다.</td></tr>';
+            return;
+        }
+
+        books.forEach(book => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${book.id}</td>
+                    <td>${book.title}</td>
+                    <td>
+                        <button class="btn-yellow" onclick="setEditMode(${book.id}, '${book.title}')">수정</button>
+                        <button class="btn-red" onclick="deleteBook(${book.id})">삭제</button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    // [저장/수정 로직]
+    function handleSave() {
+        const id = document.getElementById('bookId').value;
+        const title = document.getElementById('bookTitle').value;
+        if(!title) return;
+
+        const method = id ? 'PUT' : 'POST';
+        const bodyData = id ? { id, title } : { title };
+
+        fetch('/api/books', {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyData)
+        }).then(() => {
+            resetForm();
+            fetchAllBooks();
+        });
+    }
+
+    // [삭제 로직]
+    function deleteBook(id) {
+        if(!confirm('삭제할까요?')) return;
+        fetch(`/api/books/${id}`, { method: 'DELETE' })
+            .then(() => fetchAllBooks());
+    }
+
+    // 수정 모드 전환
+    function setEditMode(id, title) {
+        document.getElementById('bookId').value = id;
+        document.getElementById('bookTitle').value = title;
+        document.getElementById('submitBtn').innerText = '수정 완료';
+        document.getElementById('cancelBtn').style.display = 'inline-block';
+    }
+
+    function resetForm() {
+        document.getElementById('bookId').value = '';
+        document.getElementById('bookTitle').value = '';
+        document.getElementById('submitBtn').innerText = '등록';
+        document.getElementById('cancelBtn').style.display = 'none';
+    }
+</script>
+</body>
+</html>
