@@ -6,25 +6,21 @@
     <title>도서 관리 시스템</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f5f5f5; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #333; }
-
         .section { margin-bottom: 25px; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
         .section-title { font-weight: bold; margin-bottom: 10px; color: #555; display: block; }
-
-        .form-group { display: flex; gap: 10px; margin-bottom: 10px; }
-        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex: 1; }
-        button { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-
+        .form-group { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; flex: 1; min-width: 150px; }
+        button { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; transition: 0.3s; font-weight: bold; }
         .btn-blue { background-color: #007bff; color: white; }
         .btn-green { background-color: #28a745; color: white; }
         .btn-yellow { background-color: #ffc107; color: black; }
         .btn-red { background-color: #dc3545; color: white; }
         .btn-gray { background-color: #6c757d; color: white; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
         th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background-color: #f8f9fa; }
+        th { background-color: #f8f9fa; color: #333; }
     </style>
 </head>
 <body>
@@ -45,7 +41,11 @@
         <span class="section-title">📝 도서 등록 및 수정</span>
         <div class="form-group">
             <input type="hidden" id="bookId">
-            <input type="text" id="bookTitle" placeholder="도서 제목 입력">
+            <input type="text" id="bookTitle" placeholder="도서 제목">
+            <input type="text" id="bookAuthor" placeholder="저자">
+            <input type="text" id="bookIsbn" placeholder="ISBN">
+            <input type="date" id="bookPublishedDate"> </div>
+        <div style="text-align: right;">
             <button id="submitBtn" class="btn-green" onclick="handleSave()">등록</button>
             <button id="cancelBtn" class="btn-gray" style="display:none;" onclick="resetForm()">취소</button>
         </div>
@@ -54,9 +54,12 @@
     <table>
         <thead>
         <tr>
-            <th style="width: 15%;">ID</th>
-            <th style="width: 55%;">도서 제목</th>
-            <th style="width: 30%;">관리</th>
+            <th>ID</th>
+            <th>제목</th>
+            <th>저자</th>
+            <th>ISBN</th>
+            <th>출판일</th>
+            <th>관리</th>
         </tr>
         </thead>
         <tbody id="bookTableBody">
@@ -65,7 +68,6 @@
 </div>
 
 <script>
-    // 페이지 로드 시 전체 목록 조회
     document.addEventListener('DOMContentLoaded', fetchAllBooks);
 
     // [전체 조회]
@@ -76,31 +78,30 @@
             .catch(err => console.error('조회 에러:', err));
     }
 
-    // [ID로 단건 조회]
+    // [단건 조회]
     function fetchOneBook() {
         const id = document.getElementById('searchId').value;
         if(!id) { alert('ID를 입력하세요'); return; }
 
-        // API 경로가 /api/books/{id} 라고 가정
         fetch(`/api/books/${id}`)
             .then(res => {
                 if(!res.ok) throw new Error('도서를 찾을 수 없습니다.');
                 return res.json();
             })
-            .then(book => renderTable([book])) // 한 권만 리스트 형태로 전달
+            .then(book => renderTable([book]))
             .catch(err => {
                 alert(err.message);
                 renderTable([]);
             });
     }
 
-    // [테이블 렌더링 함수]
+    // [테이블 출력]
     function renderTable(books) {
         const tbody = document.getElementById('bookTableBody');
         tbody.innerHTML = '';
 
-        if (books.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3">데이터가 없습니다.</td></tr>';
+        if (!books || books.length === 0 || !books[0]) {
+            tbody.innerHTML = '<tr><td colspan="6">데이터가 없습니다.</td></tr>';
             return;
         }
 
@@ -109,52 +110,80 @@
                 <tr>
                     <td>${book.id}</td>
                     <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.isbn}</td>
+                    <td>${book.publishedDate || '-'}</td>
                     <td>
-                        <button class="btn-yellow" onclick="setEditMode(${book.id}, '${book.title}')">수정</button>
+                        <button class="btn-yellow" onclick="setEditMode(${book.id}, '${book.title}', '${book.author}', '${book.isbn}', '${book.publishedDate}')">수정</button>
                         <button class="btn-red" onclick="deleteBook(${book.id})">삭제</button>
                     </td>
                 </tr>`;
         });
     }
 
-    // [저장/수정 로직]
+    // [등록 및 수정 실행]
     function handleSave() {
         const id = document.getElementById('bookId').value;
         const title = document.getElementById('bookTitle').value;
-        if(!title) return;
+        const author = document.getElementById('bookAuthor').value;
+        const isbn = document.getElementById('bookIsbn').value;
+        const publishedDate = document.getElementById('bookPublishedDate').value;
 
+        if(!title || !author || !isbn || !publishedDate) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        // 수정(PUT)은 /api/books/{id}, 등록(POST)은 /api/books 라고 가정
+        const url = id ? `/api/books/${id}` : '/api/books';
         const method = id ? 'PUT' : 'POST';
-        const bodyData = id ? { id, title } : { title };
+        const bodyData = { title, author, isbn, publishedDate };
 
-        fetch('/api/books', {
+        fetch(url, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyData)
-        }).then(() => {
-            resetForm();
-            fetchAllBooks();
-        });
+        })
+            .then(res => {
+                if(!res.ok) throw new Error('저장 실패');
+                alert(id ? '수정되었습니다.' : '등록되었습니다.');
+                resetForm();
+                fetchAllBooks();
+            })
+            .catch(err => alert(err.message));
     }
 
-    // [삭제 로직]
+    // [삭제]
     function deleteBook(id) {
-        if(!confirm('삭제할까요?')) return;
+        if(!confirm('정말 삭제할까요?')) return;
         fetch(`/api/books/${id}`, { method: 'DELETE' })
-            .then(() => fetchAllBooks());
+            .then(() => fetchAllBooks())
+            .catch(err => alert('삭제 실패'));
     }
 
-    // 수정 모드 전환
-    function setEditMode(id, title) {
+    // [수정 모드로 전환]
+    function setEditMode(id, title, author, isbn, date) {
         document.getElementById('bookId').value = id;
         document.getElementById('bookTitle').value = title;
+        document.getElementById('bookAuthor').value = author;
+        document.getElementById('bookIsbn').value = isbn;
+        document.getElementById('bookPublishedDate').value = date;
+
         document.getElementById('submitBtn').innerText = '수정 완료';
+        document.getElementById('submitBtn').className = 'btn-yellow';
         document.getElementById('cancelBtn').style.display = 'inline-block';
     }
 
+    // [폼 초기화]
     function resetForm() {
         document.getElementById('bookId').value = '';
         document.getElementById('bookTitle').value = '';
+        document.getElementById('bookAuthor').value = '';
+        document.getElementById('bookIsbn').value = '';
+        document.getElementById('bookPublishedDate').value = '';
+
         document.getElementById('submitBtn').innerText = '등록';
+        document.getElementById('submitBtn').className = 'btn-green';
         document.getElementById('cancelBtn').style.display = 'none';
     }
 </script>
