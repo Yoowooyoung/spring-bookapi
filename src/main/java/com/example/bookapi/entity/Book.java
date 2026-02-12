@@ -63,6 +63,5 @@ public class Book {
                 ", isbn='" + isbn + '\'' +
                 ", publishedDate='" + publishedDate + '\'' +
                 '}';
-
     }
 }
