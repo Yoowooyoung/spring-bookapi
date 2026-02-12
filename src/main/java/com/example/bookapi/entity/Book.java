@@ -17,7 +17,6 @@ public class Book {
     private String isbn;
     private LocalDate publishedDate;
 
-
     public LocalDate getPublishedDate() {
         return publishedDate;
     }
@@ -52,7 +51,6 @@ public class Book {
     public void setId(Long id) {
         this.id = id;
     }
-
 
     @Override
     public String toString() {
