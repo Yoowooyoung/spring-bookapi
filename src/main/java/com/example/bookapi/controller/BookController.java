@@ -37,7 +37,7 @@ public class BookController {
 		return bookService.putById(id, requestBook);
 	}
 
-	@DeleteMapping("/books/{id}")		// 도서 삭제4
+	@DeleteMapping("/books/{id}")		// 도서 삭제
 	public Book deleteBook(@PathVariable Long id) {
 		return bookService.deleteById(id);
 	}
