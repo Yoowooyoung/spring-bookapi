@@ -9,53 +9,42 @@ import java.util.List;
 @Service
 public class BookService {
 
-    private final BookRepositoryIfs bookRepository;
+	private final BookRepositoryIfs bookRepository;
 
-    public BookService(BookRepositoryIfs bookRepository) {
-        this.bookRepository = bookRepository;
-    }
+	public BookService(BookRepositoryIfs bookRepository) {
+		this.bookRepository = bookRepository;
+	}
 
-    // 전체 조회
-    public List<Book> findAllBooks() {
-        return bookRepository.findAll();
-    };
+	public List<Book> findAllBooks() {		// 전체 도서 목록 조회
+		return bookRepository.findAll();
+	}
 
-    // 특정 id 조회
-    public Book findById(Long id) {
-        return bookRepository.findById(id).orElse(null);
-    }
+	public Book findById(Long id) {		// 특정 도서 조회
+		return bookRepository.findById(id).orElse(null);
+	}
 
-    // 도서 추가 1개
-    public Book save(Book book) {
-        return bookRepository.save(book);
-    }
-//    // 도서 추가 배열
-//    public List<Book> saveAll(List<Book> books) {
-//        return bookRepository.saveAll(books);
-//    }
+	public Book save(Book book) {		// 도서 추가
+		return bookRepository.save(book);
+	}
 
-    // 도서 수정
-    public Book putById(Long id, Book putBook) {
-        Book book = bookRepository.findById(id).orElse(null);
-        if(book != null) {
-            // 기존 book에 putBook 덮어쓰기
-            book.setTitle(putBook.getTitle());
-            book.setAuthor(putBook.getAuthor());
-            book.setIsbn(putBook.getIsbn());
-            book.setPublishedDate(putBook.getPublishedDate());
-            return bookRepository.save(book);
-        }
-        return null;
-    }
+	public Book putById(Long id, Book putBook) {		// 도서 정보 수정
+		Book book = bookRepository.findById(id).orElse(null);
+		if(book != null) {
+			book.setTitle(putBook.getTitle());		// 기존 book에 putBook(수정내용) 덮어쓰기
+			book.setAuthor(putBook.getAuthor());
+			book.setIsbn(putBook.getIsbn());
+			book.setPublishedDate(putBook.getPublishedDate());
+			return bookRepository.save(book);
+		}
+		return null;
+	}
 
-    // 도서 삭제
-    public Book deleteById(Long id) {
-        Book book = bookRepository.findById(id).orElse(null);
-        if(book != null) {
-            bookRepository.delete(book);
-            // return 삭제내역
-            return book;
-        }
-        return null;
-    }
+	public Book deleteById(Long id) {		// 도서 삭제
+		Book book = bookRepository.findById(id).orElse(null);
+		if(book != null) {
+			bookRepository.delete(book);
+			return book;		// return 삭제내역
+		}
+		return null;
+	}
 }

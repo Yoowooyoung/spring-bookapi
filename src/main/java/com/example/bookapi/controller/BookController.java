@@ -15,14 +15,14 @@ public class BookController {
 
 	public BookController(BookService bookService) {
 		this.bookService = bookService;
-    }
+	}
 
-	@GetMapping("/books")		// 전체 조회
+	@GetMapping("/books")		// 전체 도서 조회
 	public List<Book> getAllBooks() {
 		return bookService.findAllBooks();
 	}
 
-	@GetMapping("/books/{id}")		// 특정 id 조회
+	@GetMapping("/books/{id}")		// 특정 도서 조회
 	public Book getBookById(@PathVariable Long id) {
 		return bookService.findById(id);
 	}
