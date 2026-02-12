@@ -11,44 +11,34 @@ import java.util.List;
 @RequestMapping("/api")
 public class BookController {
 
-    private final BookService bookService;
+	private final BookService bookService;
 
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
-    }
-
-    // 전체 조회
-    @GetMapping("/books")
-    public List<Book> getAllBooks() {
-        return bookService.findAllBooks();
+	public BookController(BookService bookService) {
+		this.bookService = bookService;
     }
 
-    // 특정 id 조회
-    @GetMapping("/books/{id}")
-    public Book getBookById(@PathVariable Long id) {
-        return bookService.findById(id);
-    }
+	@GetMapping("/books")		// 전체 조회
+	public List<Book> getAllBooks() {
+		return bookService.findAllBooks();
+	}
 
-    // 도서 추가
-    @PostMapping("/books")
-    public Book postBooks(@RequestBody Book requestBook) {
-        return bookService.save(requestBook);
-    }
-//    // 도서 배열로 추가
-//    @PostMapping("/books")
-//    public List<Book> postBooks(@RequestBody List<Book> requestBook) {
-//        return bookService.saveAll(requestBook);
-//    }
+	@GetMapping("/books/{id}")		// 특정 id 조회
+	public Book getBookById(@PathVariable Long id) {
+		return bookService.findById(id);
+	}
 
-    // 도서 정보 수정
-    @PutMapping("books/{id}")
-    public Book putBook(@PathVariable Long id, @RequestBody Book requestBook) {
-        return bookService.putById(id, requestBook);
-    }
-//
-    // 도서 삭제
-    @DeleteMapping("/books/{id}")
-    public Book deleteBook(@PathVariable Long id) {
-        return bookService.deleteById(id);
-    }
+	@PostMapping("/books")		// 도서 추가
+	public Book postBooks(@RequestBody Book requestBook) {
+		return bookService.save(requestBook);
+	}
+
+	@PutMapping("books/{id}")		// 도서 정보 수정
+	public Book putBook(@PathVariable Long id, @RequestBody Book requestBook) {
+		return bookService.putById(id, requestBook);
+	}
+
+	@DeleteMapping("/books/{id}")		// 도서 삭제4
+	public Book deleteBook(@PathVariable Long id) {
+		return bookService.deleteById(id);
+	}
 }
