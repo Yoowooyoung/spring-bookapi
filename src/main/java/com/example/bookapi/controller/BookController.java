@@ -17,7 +17,7 @@ public class BookController {
 		this.bookService = bookService;
 	}
 
-	@GetMapping("/books")		// 전체 도서 조회
+	@GetMapping("/books")		// 전체 도서 목록 조회
 	public List<Book> getAllBooks() {
 		return bookService.findAllBooks();
 	}
