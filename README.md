@@ -22,16 +22,16 @@ GET /api/books/{id} : 특정 도서 조회
 POST /api/books : 도서 추가
 PUT /api/books/{id} : 도서 정보 수정
 DELETE /api/books/{id} : 도서 삭제
-프로젝트 구조src/main/java/com/example/bookapi/
-├── controller/
-│   └── BookController.java
-├── service/
-│   └── BookService.java
-├── repository/
-│   └── BookRepository.java
-├── entity/
-│   └── Book.java
-└── BookApiApplication.java
+프로젝트 구조src/main/java/com/example/bookapi/ <br/>
+├── controller/ <br/>
+│   └── BookController.java <br/>
+├── service/ <br/>
+│   └── BookService.java <br/>
+├── repository/ <br/>
+│   └── BookRepository.java <br/>
+├── entity/ <br/>
+│   └── Book.java <br/>
+└── BookApiApplication.java <br/>
 
 관련 학습 내용
 Spring Boot 기본 구조
