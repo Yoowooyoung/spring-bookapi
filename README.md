@@ -40,9 +40,9 @@ JPA 기본 CRUD <br/>
 테스트 방법 <br/>
 Postman 또는 curl을 사용하여 API 테스트 <br/>
 H2 Console(http://localhost:8080/h2-console)에서 데이터 확인 <br/>
-<div>
-제출물
-GitHub 저장소 링크
-Postman 테스트 결과 캡처 또는 API 테스트 문서
+
+제출물 <br/>
+GitHub 저장소 링크 <br/>
+Postman 테스트 결과 캡처 또는 API 테스트 문서 <br/>
 학습 문서 
-</div>
+
