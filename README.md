@@ -5,8 +5,8 @@
 사전 준비
 JDK 17 이상 설치
 IntelliJ IDEA 또는 VS Code + Spring 확장 설치
-Spring Initializr(https://start.spring.io)에서 프로젝트 생성
-Dependencies: Spring Web, Spring Data JPA, H2 Database
+Spring Initializr(https://start.spring.io)에서 프로젝트 생성 <br/>
+Dependencies: Spring Web, Spring Data JPA, H2 Database <br/>
 
 요구사항
 도서(Book) 엔티티 구성
