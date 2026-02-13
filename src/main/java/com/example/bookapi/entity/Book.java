@@ -1,11 +1,10 @@
 package com.example.bookapi.entity;
 
+import java.time.LocalDate;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
-import java.time.LocalDate;
 
 @Entity
 public class Book {
@@ -17,25 +16,11 @@ public class Book {
 	private String isbn;
 	private LocalDate publishedDate;
 
-	public LocalDate getPublishedDate() {
-		return publishedDate;
+	public Long getId() {
+		return id;
 	}
-	public void setPublishedDate(LocalDate publishedDate) {
-		this.publishedDate = publishedDate;
-	}
-
-	public String getIsbn() {
-		return isbn;
-	}
-	public void setIsbn(String isbn) {
-		this.isbn = isbn;
-	}
-
-	public String getAuthor() {
-		return author;
-	}
-	public void setAuthor(String author) {
-		this.author = author;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getTitle() {
@@ -45,11 +30,25 @@ public class Book {
 		this.title = title;
 	}
 
-	public Long getId() {
-		return id;
+	public String getAuthor() {
+		return author;
 	}
-	public void setId(Long id) {
-		this.id = id;
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+
+	public String getIsbn() {
+		return isbn;
+	}
+	public void setIsbn(String isbn) {
+		this.isbn = isbn;
+	}
+
+	public LocalDate getPublishedDate() {
+		return publishedDate;
+	}
+	public void setPublishedDate(LocalDate publishedDate) {
+		this.publishedDate = publishedDate;
 	}
 
 	@Override
