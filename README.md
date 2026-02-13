@@ -2,6 +2,7 @@
 
 목표 : Spring Boot로 기본적인 CRUD REST API 구현
 
-
 버전: JDK 17
 Dependencies: Spring Web, Spring Data JPA, H2 Database <br/>
+
+도메인: http://localhost:8080/api/books
